@@ -20,14 +20,12 @@ def css(path):
 def upload_post():
     if request.method == 'POST':
         if 'file' not in request.files:
-            print("lox1")
             flash('No file part')
             return redirect(request.url)
         
         file = request.files['file']
 
         if file.filename == '':
-            print("lox2")
             flash('No selected file')
             return redirect(request.url)
 
@@ -40,8 +38,9 @@ def upload_post():
             audio_name = file.filename.split(".")[0]
             full_audio_path = f"{path}/{audio_name}"
            
-            os.system(f"python convertToMp3.py {full_file_path} {full_audio_path}")
-            os.system(f"python genTran.py {full_audio_path}.mp3 {path}")
+            os.system(f"python3 convertToMp3.py {full_file_path} {full_audio_path}")
+            print(f"EXECUTING ____________ python3 genTran.py {full_audio_path}.mp3 {path}")
+            os.system(f"python3 genTran.py {full_audio_path}.mp3 {path}")
 
             transcript = ""
             full_txt_path = f"{path}/output.txt"
@@ -50,7 +49,7 @@ def upload_post():
                 print(transcript)
 
             summary = ""
-            os.system(f"python genSum.py {full_txt_path} {path}")
+            os.system(f"python3 genSum.py {full_txt_path} {path}")
             with open(f"{path}/summary.txt", "r") as f:
                 summary = f.read()
                 print(summary)
@@ -72,7 +71,7 @@ def generateRandomDir():
     letters = string.ascii_letters
     temp_dir = "".join(random.choice(letters) for i in range(12))
     final_dir = f"videos/{temp_dir}"
-    os.mkdir(final_dir)
+    os.makedirs(final_dir)
     return final_dir
 
 
@@ -81,4 +80,4 @@ if __name__ == "__main__":
     app.config['SESSION_TYPE'] = 'filesystem'
 
     app.debug = True
-    app.run()
+    app.run(host='0.0.0.0')
